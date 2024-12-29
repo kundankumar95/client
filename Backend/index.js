@@ -13,6 +13,8 @@ import Stripe from 'stripe';
 import axios from 'axios';
 import { uploadRouter } from './uploading.js';
 import { createRouteHandler } from 'uploadthing/express';
+import { MongoClient } from 'mongodb';
+
 
 const stripe = new Stripe('sk_test_51Q8QNCLN3ffFuuHqx37c88SNzKc1X1kaSsOSxNqcr8OpDoVn8n2P40WRTczy4dnAyFQ8vh0cuHYmcfyhSsZVuqbV00cNAiEnge');
 
@@ -31,10 +33,19 @@ app.use(
     
   }),
 );
-const uri = process.env.MONGODB_URI;
-mongoose.connect(uri)
-  .then(() => console.log("MongoDB connected"))
-  .catch(err => console.error("Failed to connect to MongoDB", err.message));
+
+const MONGO_URI = process.env.MONGO_URI; 
+const client = new MongoClient(MONGO_URI);
+
+mongoose.connect(MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  serverSelectionTimeoutMS: 50000, 
+})
+.then(() => console.log("MongoDB connected"))
+.catch(err => console.error("Failed to connect to MongoDB", err.message));
+
+app.use(express.json()); 
 
 
 const UserSchema = new mongoose.Schema({
@@ -90,7 +101,7 @@ app.post('/signup', async (req, res) => {
 
 app.post('/login', async (req, res) => {
   try {
-    const { email, password } = req.body; // Destructure the body
+    const { email, password } = req.body; 
 
     const user = await Users.findOne({ email });
     if (!user) {
@@ -113,22 +124,18 @@ app.post('/login', async (req, res) => {
 });
 
 
-const storage = multer.memoryStorage(); // Store files in memory
+const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
 app.post('/upload', upload.single('image'), async (req, res) => {
   try {
-    // Check for file in request
-    console.log("hii");
     console.log(req);
     if (!req.file) {
       return res.status(400).json({ success: false, message: 'No file uploaded' });
     }
 
-    // Get the token from environment variables
      const UPLOADTHING_TOKEN = process.env.UPLOADTHING_TOKEN;
     
-    // Send file data to UploadThing API
     const response = await axios.post('https://api.uploadthing.com/upload', {
       file: req.file.buffer,
     }, {
@@ -165,20 +172,31 @@ const ProductSchema = new mongoose.Schema({
   APPS: { type: Number, required: true },
   GA_TW_SV: { type: String, required: true },
   value: { type: Number, required: true },
+  type: { type: String, required: true }, 
+
 });
 
 
 const Product = mongoose.model('Product', ProductSchema);
 
-// Add Product Endpoint
-app.post('/addproduct', async (req, res) => {
+const addProductEndpoint = async (req, res) => {
   console.log("Received data:", req.body); 
   try {
-    let products = await Product.find({});
-    let id = products.length > 0 ? products.slice(-1)[0].id + 1 : 1;
+    await client.connect();
 
-    const product = new Product({
-      id: id,
+    const db = client.db("beingSarangi");
+    const availableCardsCollection = db.collection("available_cards");
+
+    const existingProduct = await availableCardsCollection.findOne({ name: req.body.name });
+
+    if (existingProduct) {
+      return res.status(400).json({ success: false, message: 'Product already exists.' });
+    }
+
+    const productType = parseFloat(req.body.price) >= 10 ? 'Gold' : 'Silver';
+
+    const newProduct = {
+      id: Date.now(),
       name: req.body.name,
       image: req.body.image,
       category: req.body.category,
@@ -189,63 +207,109 @@ app.post('/addproduct', async (req, res) => {
       APPS: req.body.APPS,
       GA_TW_SV: req.body.GA_TW_SV,
       value: req.body.value,
-    });
-    await product.save();
-    res.json({ success: true, product });
-    console.log(product);
+      type: productType,
+    };
+    const result = await availableCardsCollection.insertOne(newProduct);
+
+    const usersCollection = db.collection('users');
+    const user = await usersCollection.findOne({ userId: req.body.userId });
+    if (user) {
+      await usersCollection.updateOne(
+        { userId: req.body.userId },
+        { $push: { purchasedProducts: newProduct } } 
+      );
+    }
+
+    res.json({ success: true, product: newProduct });
+    console.log("Product added:", newProduct);
   } catch (err) {
     console.error('Add Product Error:', err.message);
     res.status(400).json({ success: false, message: err.message });
+  } finally {
+    await client.close();
   }
-}); 
+};
+app.post('/addproduct', addProductEndpoint);
+
 
 // Remove Product Endpoint
 app.post('/removeproduct', async (req, res) => {
+  const { id, name } = req.body;
+  
+  const client = new MongoClient(MONGO_URI);
+  
   try {
-    await Product.findOneAndDelete({ id: req.body.id });
-    res.json({ success: true, name: req.body.name });
+    await client.connect();
+    const db = client.db('beingSarangi');
+    const availableCardsCollection = db.collection('available_cards');
+    const result = await availableCardsCollection.deleteOne({ id: id });
+    if (result.deletedCount > 0) {
+      res.json({ success: true, name: name });
+    } else {
+      res.status(404).json({ success: false, message: 'Product not found' });
+    }
   } catch (err) {
     console.error('Remove Product Error:', err.message);
     res.status(400).json({ success: false, message: err.message });
+  } finally {
+    await client.close();
   }
 });
 
 // Get All Products Endpoint
 app.get('/allproducts', async (req, res) => {
-  console.log('Received request for /allproducts');  
+  console.log('Received request for /allproducts');
+  const client = new MongoClient(MONGO_URI);
+  
   try {
-    let products = await Product.find({});
+    await client.connect();
+    const db = client.db('beingSarangi');
+    const availableCardsCollection = db.collection('available_cards');
+  
+    const products = await availableCardsCollection.find({}).toArray();
+    
     console.log('Products retrieved:', products);
     res.send(products);
   } catch (err) {
     console.error('Get All Products Error:', err.message);
     res.status(500).json({ success: false, message: err.message });
+  } finally {
+    await client.close();
   }
 });
 
+
 //creating endpoint for newCards data
 app.get('/newCards', async (req, res) => {
+  console.log('Received request for /newCards');
+  
   try {
-    const { search } = req.query; 
+    const { search } = req.query;
     let products;
+    const client = new MongoClient(MONGO_URI);
+    const db = client.db('beingSarangi');
+    const availableCardsCollection = db.collection('available_cards');
+    
+    const query = { type: 'Gold' };
 
     if (search) {
-      console.log("Search query:", search); 
-      const regex = new RegExp(search, 'i'); 
-      products = await Product.find({ name: regex });
-      console.log("Matching products:", products); 
+      console.log("Search query:", search);
+      const regex = new RegExp(search, 'i');  
+      query.name = regex;  
+      products = await availableCardsCollection.find(query).toArray();
+      console.log("Matching Gold products with search:", products);
     } else {
-      products = await Product.find().sort({ createdAt: -1 }).limit(20);
-      console.log("Latest products fetched:", products); 
+      products = await availableCardsCollection.find(query).sort({ createdAt: -1 }).limit(20).toArray();
+      console.log("Latest Gold products fetched:", products);
     }
 
     if (products.length === 0) {
-      console.log("No products found.");
+      console.log("No Gold products found.");
     }
 
     res.json(products);
   } catch (error) {
-    console.error("Error fetching cards:", error.message);
+    console.error("Error fetching Gold cards:", error.message);
     res.status(500).json({ success: false, message: error.message });
   }
 });

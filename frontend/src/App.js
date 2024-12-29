@@ -13,6 +13,9 @@ import Payment from './Components/Payment/Payment';
 import Success from './Components/Success/Success';
 import Points from './Components/Points/Points';
 import Rolls from './Components/Rolls/Rolls';
+import AdminHome from './Components/AdminHome/AdminHome';
+import AddProduct from './Components/AddProduct/AddProduct'
+import ListProduct from './Components/ListProduct/ListProduct'
 
 const Layout = ({ children, showFooter = false, noLayout = false }) => {
   if (noLayout) {
@@ -34,7 +37,10 @@ function App() {
   return (
     <Routes>
       <Route path="/signup" element={<Signup />} />
-      <Route path="/" element={<Layout showFooter={true}><Home /></Layout>} />
+      <Route path="/admin" element={<AdminHome/>}/>
+      <Route path="/admin/addproduct" element={<AddProduct/>}/>
+      <Route path="/admin/listproduct" element={<ListProduct/>}/>
+       <Route path="/" element={<Layout showFooter={true}><Home /></Layout>} />
       <Route path="/services" element={<Layout><Services /></Layout>} />
       <Route path="/feedback" element={<Layout><Feedback /></Layout>} />
       <Route path="/contact" element={<Layout><Footer /></Layout>} />
