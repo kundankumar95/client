@@ -12,7 +12,7 @@ const Home = () => {
         <h2>Explore Our Game</h2>
         <div className="home-row">
           <div className="subject-card">
-            <img  src={image1} alt="#" />
+              <img  src={image1} alt="#" />
           </div>
          
           <div className="subject-card">
