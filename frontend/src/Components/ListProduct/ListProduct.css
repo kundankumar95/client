@@ -15,7 +15,7 @@
 .listproduct-header,
 .listproduct-item {
   display: grid;
-  grid-template-columns: 1fr 3fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr; /* Adjust as needed */
+  grid-template-columns: 1fr 3fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr; 
   gap: 15px;
   width: 100%;
   padding: 10px 0;
@@ -25,12 +25,12 @@
 }
 
 .listproduct-header {
-  background-color: #e9ecef; /* Light background for headers */
+  background-color: #e9ecef; 
   border-bottom: 2px solid #dee2e6;
 }
 
 .listproduct-item {
-  font-weight: 500; /* Regular font weight */
+  font-weight: 500; 
 }
 
 .listproduct-product-icon {
