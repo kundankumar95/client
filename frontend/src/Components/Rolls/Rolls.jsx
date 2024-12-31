@@ -1,10 +1,10 @@
- import React from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Rolls.css';
 
 const Points = () => {
-  const pointsArray = [1, 2, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100];
-  const pointValue = 10;
+  const pointsArray = [1];
+  // const pointValue = 20;
   const navigate = useNavigate();
 
   const handlePurchase = (price, numberOfPoints) => {
@@ -13,30 +13,45 @@ const Points = () => {
 
   return (
     <div>
-      <h2>Rolls Table</h2>
+      <h2>Shop Now</h2>
       <table className="points-table">
         <thead>
           <tr>
-            <th>Rolls</th>
             <th>Rupees</th>
-            <th>Purchase</th>
+            <th>Rolls</th>
+            <th>Coins</th>
           </tr>
         </thead>
         <tbody>
-          {pointsArray.map((point) => (
-            <tr key={point}>
-              <td>{point}</td>
-              <td>{point * pointValue}</td>
-              <td>
-                <button 
-                  className="buy-button" 
-                  onClick={() => handlePurchase(point * pointValue, point)}
-                >
-                  Buy Now
-                </button>
-              </td>
-            </tr>
-          ))}
+          {pointsArray.map((point) => {
+            const Rupees = 21; 
+            const Rolls = 3; 
+            const coins = 50;
+
+            return (
+              <tr key={point}>
+                <td>{Rupees}</td>
+                <td>
+                  <button
+                    className="value-button"
+                    onClick={() => handlePurchase(Rolls, Rolls)}
+                  >
+                    {Rolls} 
+                  </button>
+                </td> 
+
+               
+                <td>
+                  <button
+                    className="value-button"
+                    onClick={() => handlePurchase(coins, coins)}
+                  >
+                    {coins}
+                  </button>
+                </td> 
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>

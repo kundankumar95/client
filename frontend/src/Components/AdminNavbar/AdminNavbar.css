@@ -1,9 +1,9 @@
 :root {
-  --primary-color: #87CEEB;   /* Sky blue */
-  --secondary-color: #4682B4; /* A deeper sky blue for contrast */
-  --accent-color: #00BFFF;    /* Accent blue color */
-  --background-color: #ffffff; /* White background */
-  --text-color: #000000;      /* Black text for readability */
+  --primary-color-root: #87CEEB;   /* Sky blue */
+  --secondary-color-root: #4682B4; /* A deeper sky blue for contrast */
+  --accent-color-root: #00BFFF;    /* Accent blue color */
+  --background-color-root: #ffffff; /* White background */
+  --text-color-root: #000000;      /* Black text for readability */
 }
 
 .navbar {
@@ -11,14 +11,14 @@
     justify-content: space-between;
     align-items: center;
     padding: 1rem 1.5rem;
-    background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
-    color: var(--text-color); 
+    background: linear-gradient(135deg, var(--accent-color-root), var(--primary-color-root));
+    color: var(--text-color1); 
     position: fixed;
     top: 0;
     width: 100%;
     z-index: 1000;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Lighter shadow */
-    transition: background-color 0.5s ease; 
+    transition: background-color-root 0.5s ease; 
     height: 90px;
 }
 
@@ -36,12 +36,12 @@
 
 .navbar-logo p {
     margin-top: 5px; 
-    color: var(--text-color); 
+    color: var(--text-color-root); 
     font-size: 1rem; 
 }
 
 .navbar:hover {
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); 
+    background: linear-gradient(135deg, var(--primary-color-root), var(--secondary-color-root)); 
 }
 
 .navbar-links {
@@ -59,7 +59,7 @@
 }
 
 .navbar-links a {
-    color: var(--text-color); 
+    color: var(--text-color-root); 
     text-decoration: none;
     font-size: 1rem;
     font-weight: 500;
@@ -69,29 +69,29 @@
 }
 
 .navbar-links a:hover {
-    color: var(--primary-color);
-    text-shadow: 0 0 8px var(--accent-color); 
+    color: var(--primary-color-root);
+    text-shadow: 0 0 8px var(--accent-color-root); 
 }
 
 .signup-button {
     padding: 0.5rem 1rem;
     margin-right: 50px;
-    background: linear-gradient(135deg, var(--primary-color), var(--background-color));
-    color: var(--text-color); 
+    background: linear-gradient(135deg, var(--primary-color-root), var(--background-color-root));
+    color: var(--text-color-root); 
     border: none;
     border-radius: 25px;
     cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    transition: background-color-root 0.3s ease, transform 0.2s ease;
     white-space: nowrap;
     position: relative;
     transform: translateX(0);
 }
 
 .signup-button:hover {
-    background-color: var(--background-color);
-    color: var(--primary-color);
+    background-color: var(--background-color-root);
+    color: var(--primary-color-root);
     transform: translateX(-5%); 
-    box-shadow: 0 0 10px var(--secondary-color);
+    box-shadow: 0 0 10px var(--secondary-color-root);
 }
 
 .hamburger {
@@ -104,7 +104,7 @@
 .hamburger span {
     height: 3px; 
     width: 25px;
-    background: var(--text-color); 
+    background: var(--text-color-root); 
     margin: 3px 0; 
     transition: all 0.3s ease; 
 }
@@ -118,7 +118,7 @@
         display: none; 
         flex-direction: column; 
         width: 100%; 
-        background-color: var(--accent-color);
+        background-color: var(--accent-color-root);
         position: absolute;
         top: 70px; 
         left: 0;
