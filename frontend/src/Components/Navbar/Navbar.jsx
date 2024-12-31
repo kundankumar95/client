@@ -36,7 +36,7 @@ const Navbar = () => {
     };
 
     return (
-        <nav className="navbar">
+        <nav style={{ color:'orange' }} className="navbar">
             <div className="navbar-logo">
                 <img src={sarangi_web_logo} alt="GameZone Logo" style={{ height: '70px', width: '150px' , marginTop : '5px' }} /> 
                 <p style={{ marginTop: '5px', color: '#ffffff', fontSize: '1rem' }}>BallerCards</p> 

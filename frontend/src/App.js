@@ -16,6 +16,7 @@ import Rolls from './Components/Rolls/Rolls';
 import AdminHome from './Components/AdminHome/AdminHome';
 import AddProduct from './Components/AddProduct/AddProduct'
 import ListProduct from './Components/ListProduct/ListProduct'
+import Rules from './Components/rules/rules'
 
 const Layout = ({ children, showFooter = false, noLayout = false }) => {
   if (noLayout) {
@@ -37,6 +38,7 @@ function App() {
   return (
     <Routes>
       <Route path="/signup" element={<Signup />} />
+      <Route path="/rules" element={<Rules />} />
       <Route path="/admin" element={<AdminHome/>}/>
       <Route path="/admin/addproduct" element={<AddProduct/>}/>
       <Route path="/admin/listproduct" element={<ListProduct/>}/>
@@ -48,7 +50,7 @@ function App() {
       <Route path="/points" element={<Layout><Points /></Layout>} />
       <Route path="/rolls" element={<Layout><Rolls /></Layout>} />
       <Route path="/payment" element={<Layout><Payment /></Layout>} />
-      <Route path="/success" element={<Layout noLayout={true}><Success /></Layout>} />
+      <Route path="/success" element={<Layout noLayout={true}><Success /></Layout>} />              /rules
     </Routes>
   );
 }

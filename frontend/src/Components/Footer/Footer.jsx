@@ -4,7 +4,7 @@ import './Footer.css';
 // import discord_icon from '../assets/discord.png';
 import instagram_icon from '../assets/instagram.png';
 import youtube_icon from '../assets/youtube.png';
-import logo from '../assets/footer.logo.sarangi.jpg';
+import logo from '../assets/negativelogo.png';
 
 const Footer = () => {
   return (
